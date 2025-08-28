@@ -1,8 +1,17 @@
+// Chat.tsx - Real-time chat component for user-helper communication.
+// Analysis:
+// - Uses React hooks for state and effects.
+// - Simulates a chat experience with initial messages and auto-responses.
+// - Adapts UI based on user type (user/helper).
+// - Scrolls to latest message automatically.
+// - UI includes header, message list, and input box.
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { Send, ArrowLeft, Phone, Video, MoreVertical } from 'lucide-react';
 
+// Message interface defines the structure of each chat message
 interface Message {
   id: number;
   sender: 'user' | 'helper';
@@ -12,13 +21,20 @@ interface Message {
 }
 
 const Chat: React.FC = () => {
+  // Get chatId from route params (for dynamic chat sessions)
   const { chatId } = useParams();
+  // Get current user from context
   const { user } = useUser();
+  // State for chat messages
   const [messages, setMessages] = useState<Message[]>([]);
+  // State for new message input
   const [newMessage, setNewMessage] = useState('');
+  // State to indicate connection status (simulated)
   const [isConnected, setIsConnected] = useState(false);
+  // Ref for scrolling to the bottom of messages
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Simulate the other user in the chat based on current user type
   const otherUser = {
     name: user?.type === 'user' ? 'Rajesh Kumar' : 'Sarah Johnson',
     type: user?.type === 'user' ? 'Professional Plumber' : 'Client',
@@ -26,7 +42,7 @@ const Chat: React.FC = () => {
     avatar: `https://images.unsplash.com/photo-${user?.type === 'user' ? '1472099645785' : '1494790108755'}-5ba87ac005-c9cc949eb9da?w=150&h=150&fit=crop&crop=face`
   };
 
-  // Initialize chat with welcome message
+  // useEffect to initialize chat with welcome and system messages
   useEffect(() => {
     const initialMessages: Message[] = [
       {
@@ -50,7 +66,7 @@ const Chat: React.FC = () => {
     setMessages(initialMessages);
     setIsConnected(true);
 
-    // Simulate incoming message after delay
+    // Simulate incoming message after a delay (auto-response)
     const timer = setTimeout(() => {
       const autoMessage: Message = {
         id: 3,
@@ -64,18 +80,21 @@ const Chat: React.FC = () => {
       setMessages(prev => [...prev, autoMessage]);
     }, 3000);
 
+    // Cleanup timer on unmount
     return () => clearTimeout(timer);
   }, [user?.type]);
 
-  // Scroll to bottom when new messages arrive
+  // useEffect to scroll to the bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Handler for sending a new message
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    // Create new message object
     const message: Message = {
       id: Date.now(),
       sender: user?.type === 'user' ? 'user' : 'helper',
@@ -84,10 +103,11 @@ const Chat: React.FC = () => {
       type: 'text'
     };
 
+    // Add new message to messages state
     setMessages(prev => [...prev, message]);
     setNewMessage('');
 
-    // Simulate real-time response
+    // Simulate auto-response from other user after a short delay
     setTimeout(() => {
       const responses = [
         "Got it! I'll be there shortly.",
@@ -110,91 +130,79 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+    <div className="chat-root">
+      {/* Header section with back button, avatar, and contact options */}
+      <div className="chat-header">
+        <div className="chat-header-container">
+          <div className="chat-header-left">
             <Link
               to={user?.type === 'user' ? '/dashboard/user' : '/dashboard/helper'}
-              className="text-[#00B9F7] hover:text-blue-600 transition-colors"
+              className="chat-header-back"
             >
               <ArrowLeft className="w-6 h-6" />
             </Link>
-            
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
+              <div className="chat-header-avatar">
                 <img
                   src={otherUser.avatar}
                   alt={otherUser.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{otherUser.name}</h3>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">{otherUser.status}</span>
+              <div className="chat-header-info">
+                <h3 className="chat-header-name">{otherUser.name}</h3>
+                <div className="chat-header-status">
+                  <div className="chat-header-status-dot"></div>
+                  <span className="chat-header-status-text">{otherUser.status}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="flex items-center space-x-3">
-            <button className="p-2 text-gray-600 hover:text-[#00B9F7] transition-colors">
+          <div className="chat-header-actions">
+            <button className="chat-header-action-btn">
               <Phone className="w-5 h-5" />
             </button>
-            <button className="p-2 text-gray-600 hover:text-[#00B9F7] transition-colors">
+            <button className="chat-header-action-btn">
               <Video className="w-5 h-5" />
             </button>
-            <button className="p-2 text-gray-600 hover:text-[#00B9F7] transition-colors">
+            <button className="chat-header-action-btn">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
         </div>
       </div>
-
-      {/* Connection Status */}
+      {/* Connection status bar */}
       {isConnected && (
-        <div className="bg-green-50 border-b border-green-200 px-4 py-2">
-          <div className="max-w-4xl mx-auto flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-green-700">Connected via WebSocket - Real-time messaging active</span>
+        <div className="chat-connection-bar">
+          <div className="chat-connection-bar-container">
+            <div className="chat-connection-dot"></div>
+            <span className="chat-connection-text">Connected via WebSocket - Real-time messaging active</span>
           </div>
         </div>
       )}
-
-      {/* Messages */}
-      <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-200px)] overflow-y-auto">
-        <div className="space-y-4">
+      {/* Messages area */}
+      <div className="chat-messages-area">
+        <div className="chat-messages-list">
           {messages.map((message) => {
             if (message.type === 'system') {
               return (
-                <div key={message.id} className="flex justify-center">
-                  <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm">
+                <div key={message.id} className="chat-message-system">
+                  <div className="chat-message-system-bubble">
                     {message.message}
                   </div>
                 </div>
               );
             }
-
             const isCurrentUser = (user?.type === 'user' && message.sender === 'user') || 
-                                 (user?.type !== 'user' && message.sender === 'helper');
-            
+                                  (user?.type !== 'user' && message.sender === 'helper');
             return (
               <div
                 key={message.id}
-                className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                className={`chat-message-row ${isCurrentUser ? 'user' : 'helper'}`}
               >
-                <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                  isCurrentUser
-                    ? 'bg-[#00B9F7] text-white'
-                    : 'bg-white text-gray-900 border border-gray-200'
-                }`}>
+                <div className={`chat-message-bubble ${isCurrentUser ? 'user' : 'helper'}`}>
                   <p className="text-sm">{message.message}</p>
-                  <p className={`text-xs mt-1 ${
-                    isCurrentUser ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
+                  <p className={`chat-message-time ${isCurrentUser ? 'user' : 'helper'}`}>
                     {message.timestamp.toLocaleTimeString([], { 
                       hour: '2-digit', 
                       minute: '2-digit' 
@@ -207,21 +215,20 @@ const Chat: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
-      {/* Message Input */}
-      <div className="bg-white border-t border-gray-200 px-4 py-4">
-        <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSendMessage} className="flex space-x-4">
+      {/* Message input box */}
+      <div className="chat-input-bar">
+        <div className="chat-input-bar-container">
+          <form onSubmit={handleSendMessage} className="chat-input-form">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00B9F7] focus:border-transparent"
+              className="chat-input-box"
               placeholder="Type your message..."
             />
             <button
               type="submit"
-              className="bg-[#00B9F7] text-white p-3 rounded-xl hover:bg-blue-600 transition-colors"
+              className="chat-input-send-btn"
             >
               <Send className="w-5 h-5" />
             </button>

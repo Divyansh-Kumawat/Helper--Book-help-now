@@ -1,24 +1,28 @@
+// Footer component displays branding, quick links, services, and contact info.
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-[#00B9F7] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">H</span>
+    <footer className="footer-root">
+      <div className="footer-container">
+        <div className="footer-grid">
+          {/* Branding and description */}
+          <div className="footer-brand">
+            <div className="footer-brand-flex">
+              <div className="footer-logo">
+                <span className="footer-logo-text">H</span>
               </div>
-              <span className="text-2xl font-bold text-[#00B9F7]">HELPER</span>
+              <span className="footer-title">HELPER</span>
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p className="footer-desc">
               Book your service at your doorstep. Professional and reliable service providers ready to help you with all your needs.
             </p>
           </div>
 
+          {/* Quick navigation links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-[#00B9F7]">Quick Links</h3>
             <ul className="space-y-2">
@@ -29,6 +33,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* List of available services */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-[#00B9F7]">Services</h3>
             <ul className="space-y-2">
@@ -39,6 +44,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Contact information and social media icons */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-[#00B9F7]">Contact Info</h3>
             <div className="space-y-3">
@@ -52,6 +58,7 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <div className="flex space-x-4 mt-6">
+              {/* Social media icons */}
               <Facebook className="w-6 h-6 text-gray-300 hover:text-[#00B9F7] cursor-pointer transition-colors" />
               <Twitter className="w-6 h-6 text-gray-300 hover:text-[#00B9F7] cursor-pointer transition-colors" />
               <Instagram className="w-6 h-6 text-gray-300 hover:text-[#00B9F7] cursor-pointer transition-colors" />
@@ -59,9 +66,9 @@ const Footer: React.FC = () => {
             </div>
           </div>
         </div>
-
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">
+        {/* Copyright and tagline */}
+        <div className="footer-copyright">
+          <p>
             © 2025 Helper. All rights reserved. | Book your service at your doorstep
           </p>
         </div>
